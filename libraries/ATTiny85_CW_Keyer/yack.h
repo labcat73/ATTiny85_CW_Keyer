@@ -26,8 +26,10 @@
 #define KEYDDR       DDRB
 #define KEYPORT      PORTB
 #define KEYINP       PINB
-#define DITPIN       2  // TSE was 3
+#define DITPIN       3
 #define DAHPIN       4
+#define DITPULLUP    0
+#define DAHPULLUP    0
 
 // Definition of where the transceiver keyer line is connected
 #define OUTDDR       DDRB
@@ -44,8 +46,8 @@
 #define BTNDDR       DDRB
 #define BTNPORT      PORTB
 #define BTNINP       PINB
-#define BTNPIN       5  // TSE was 2
-
+#define BTNPIN       2
+#define BTNPULLUP    1
 
 // The following defines the meaning of status bits in the yackflags and volflags
 // global variables

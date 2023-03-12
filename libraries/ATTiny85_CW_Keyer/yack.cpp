@@ -160,6 +160,15 @@ const byte morse[] PROGMEM =
 // Do not forget to increase the legth of the array..
 const char spechar[24] PROGMEM = "?./!,:;~$^()-@_|=#+*%&<>";
 
+// Define register bit for Timer0 tone output. Eiher PB0 or PB1 on ATTiny85
+#if (STPIN == 0)
+  #define COMSTPIN COM0A0
+#elif (STPIN == 1)
+  #define COMSTPIN COM0B0
+#else
+  #error "Only PB0 and PB1 supported on ATTiny85!
+#endif
+
 
 // Functions
 
@@ -204,10 +213,19 @@ void yackinit(void)
   SETBIT(OUTDDR, OUTPIN);
   SETBIT(STDDR, STPIN);
 
-  // Raise internal pullups for all inputs
-  SETBIT(KEYPORT, DITPIN);
-  SETBIT(KEYPORT, DAHPIN);
-  SETBIT(BTNPORT, BTNPIN);
+  // Configure internal pullups for all inputs
+  if (DITPULLUP)
+  {
+    SETBIT(KEYPORT, DITPIN);
+  }
+  if (DAHPULLUP)
+  {
+    SETBIT(KEYPORT, DAHPIN);
+  }
+  if (BTNPULLUP)
+  {
+    SETBIT(BTNPORT, BTNPIN);
+  }
 
   // Retrieve magic value
   magval = eeprom_read_byte(&magic);
@@ -647,9 +665,9 @@ static void key(byte mode)
       OCR0B = ctcvalue;
 
       // Activate CTC mode
-      TCCR0A |= (1 << COM0B0 | 1 << WGM01);
+      TCCR0A |= (1 << COMSTPIN | 1 << WGM01);
 
-      // Configure prescaler
+      // Configure prescaler; clkio/8
       TCCR0B = 1 << CS01;
     }
 
