@@ -2,9 +2,13 @@
  
  @file      yack.c
  @brief     CW Keyer library
- @author    Jan Lategahn DK3LJ jan@lategahn.com (C) 2011; modified by Jack Welch AI4SV; modified by Don Froula WD9DMP
+ @author    Jan Lategahn DK3LJ jan@lategahn.com (C) 2011
+            Modified by:
+            * Jack Welch AI4SV
+            * Don Froula WD9DMP
+            * Tobias Selig DL3MHT
  
- @version   0.87
+ @version   0.88
  
  This program is free software: you can redistribute it and/or modify
  it under the terms of the GNU General Public License as published by
@@ -26,7 +30,13 @@
                           Memory playback halts immediately on command key instead of looping through message length without playing anything.
                           Removed playback of recorded message before saving.
                           Changed yackstring command to return to command mode instead of normal mode if interrupted with command key
- 
+ @date      23.12.2016  - V0.86
+                          Changed sidetone back to 800 Hz and mode default to iambicB
+ @date      12.03.2023  - V0.88 by DL3MHT
+                          Reformatted code to personal preferences
+                          Made sidetone pin configurable for PB0 and PB1
+                          Give keyer configuration flags as parameter to yackinit and yackreset
+
  @todo      Make the delay dependent on T/C 1 
 
 */
@@ -183,13 +193,13 @@ const char spechar[24] PROGMEM = "?./!,:;~$^()-@_|=#+*%&<>";
  stored in the .h file. It sets the dirty flag and calls the save routine
  to write the data into EEPROM immediately.
 */
-void yackreset(void)
+void yackreset(byte flags)
 {
   ctcvalue = DEFCTC;                    // Initialize to 800 Hz
   wpm = DEFWPM;                         // Init to default speed
   wpmcnt = (1200 / YACKBEAT) / DEFWPM;  // default speed
   farnsworth = 0;                       // No Farnsworth gap
-  yackflags = FLAGDEFAULT;
+  yackflags = flags;
   volflags |= DIRTYFLAG;
 
   // Store them in EEPROM
@@ -205,7 +215,7 @@ void yackreset(void)
  will reset all values to their defaults.
  This function must be called once before the remaining fuctions can be used.
 */
-void yackinit(void)
+void yackinit(byte flags)
 {
   byte magval;
 
@@ -241,7 +251,7 @@ void yackinit(void)
   }
   else
   {
-    yackreset();
+    yackreset(flags);
   }
 
   yackinhibit(OFF);
@@ -251,9 +261,10 @@ void yackinit(void)
   GIMSK |= (1 << PCIE);  // Enable pin change interrupt
 #endif
 
-  // Initialize timer1 to serve as the system heartbeat
-  // CK runs at 1MHz. Prescaling by 64 makes that 15625 Hz.
+  // Initialize Timer1 to serve as the system heartbeat
+  // CK runs at 1MHz. Prescaling by 64 makes that 15625 Hz (0.064 ms).
   // Counting 78 cycles of that generates an overflow every 5ms
+  // 78 * 0.064ms = 4.992ms
 
   OCR1C = 78;                         // 77 counts per cycle
   TCCR1 |= (1 << CTC1) | 0b00000111;  // Clear Timer on match, prescale ck by 64
@@ -301,10 +312,12 @@ void yackpower(byte n)
       shdntimer = 0;
 
       set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-      sleep_bod_disable();
+
       sleep_enable();
+      sleep_bod_disable();
       sei();
       sleep_cpu();
+      sleep_disable();
       cli();
 
       // There is no technical reason to CLI here but it avoids hitting the ISR every time

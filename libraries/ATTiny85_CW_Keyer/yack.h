@@ -1,20 +1,15 @@
 /* ********************************************************************
- Program	: yack.h
- Author		: Jan Lategahn DK3LJ modified by Jack Welch AI4SV, Don Froula WD9DMP
- Purpose	: definition of keyer hardware
- Created	: 15.10.2010
- Update		: 23.12.2016
- Version	: 0.86
-
- Changelog
- ---------
-
- Version		Date		Change
- ----------------------------------------------------------------------
- 0.86          23.12.2016    Changed sidetone back to 800 Hz and mode default to iambicB
-
- Todo
- ----
+ Program    : yack.h
+ Author     : Jan Lategahn DK3LJ
+              Modified by:
+              * Jack Welch AI4SV
+              * Don Froula WD9DMP
+              * Tobias Selig DL3MHT
+ Purpose    : Definition of keyer hardware
+ Created    : 15.10.2010
+ Update     : 12.03.2023
+ Version    : 0.88
+ Note       : See changelog in yack.c (or yack.cpp).
 
  *********************************************************************/
 
@@ -22,25 +17,16 @@
 
 // The following settings define the hardware connections to the keyer chip
 
-// Definition of where the keyer itself is connected
-#define KEYDDR       DDRB
-#define KEYPORT      PORTB
-#define KEYINP       PINB
-#define DITPIN       3
-#define DAHPIN       4
-#define DITPULLUP    0
-#define DAHPULLUP    0
-
-// Definition of where the transceiver keyer line is connected
-#define OUTDDR       DDRB
-#define OUTPORT      PORTB
-#define OUTPIN       1  // TSE was 0
-
 // Definition of where the sidetone output is connected (beware,
 // this is chip dependent and can not just be changed at will)
 #define STDDR        DDRB
 #define STPORT       PORTB
-#define STPIN        0  // TSE was 1
+#define STPIN        0
+
+// Definition of where the transceiver keyer line is connected
+#define OUTDDR       DDRB
+#define OUTPORT      PORTB
+#define OUTPIN       1
 
 // Definition of where the control button is connected
 #define BTNDDR       DDRB
@@ -48,6 +34,15 @@
 #define BTNINP       PINB
 #define BTNPIN       2
 #define BTNPULLUP    1
+
+// Definition of where the keyer itself is connected
+#define KEYDDR       DDRB
+#define KEYPORT      PORTB
+#define KEYINP       PINB
+#define DITPIN       3
+#define DITPULLUP    0
+#define DAHPIN       4
+#define DAHPULLUP    0
 
 // The following defines the meaning of status bits in the yackflags and volflags
 // global variables
@@ -81,13 +76,14 @@
 
 // YACK heartbeat frequency (in ms)
 #define YACKBEAT        5
-#define YACKSECS(n) (n * (1000 / YACKBEAT))  // Beats in n seconds (off by 2x for 5ms heartbeat)
-#define YACKMS(n) (n / YACKBEAT)             // Beats in n milliseconds
+#define YACKSECS(n)     (n * (1000 / YACKBEAT))  // Beats in n seconds (off by 2x for 5ms heartbeat)
+#define YACKMS(n)       (n / YACKBEAT)           // Beats in n milliseconds
 
 // Power save mode
 #define POWERSAVE          // Comment this line if no power save mode required
 #define PSTIME         30  // 30 seconds until automatic powerdown
-#define PWRWAKE ((1 << PCINT3) | (1 << PCINT4) | (1 << PCINT2))  // Dit, Dah or Command wakes us up..
+//              ((1 << PCINT3) | (1 << PCINT4) | (1 << PCINT2))
+#define PWRWAKE ((1 << DITPIN) | (1 << DAHPIN) | (1 << BTNPIN))  // Dit, Dah or Command wakes us up..
 
 // These values limit the speed that the keyer can be set to
 #define MAXWPM         50
@@ -160,7 +156,7 @@ typedef uint8_t byte;
 typedef uint16_t word;
 
 // Forward declarations of public functions
-void yackinit(void);
+void yackinit(byte flags);
 void yackchar(char c);
 void yackstring(const char* p);
 char yackiambic(byte ctrl);
@@ -175,7 +171,7 @@ void yackbeat(void);
 void yackmessage(byte function, byte msgnr);
 void yacksave(void);
 byte yackctrlkey(byte mode);
-void yackreset(void);
+void yackreset(byte flags);
 word yackuser(byte func, byte nr, word content);
 void yacknumber(word n);
 word yackwpm(void);

@@ -45,6 +45,9 @@
 
 #include "yack.h"
 
+// Configuration
+#define FLAGS  IAMBICA | TXKEY | SIDETONE
+
 // Time after which callsign training is assumed complete
 #define TRAINTIMEOUT 10  // 10 Seconds
 #define PITCHREPEAT 10   // 10 e's will be played for pitch adjust
@@ -52,7 +55,7 @@
 
 // Some texts in Flash used by the application
 const char txok[] PROGMEM = "R";
-const char vers[] PROGMEM = "V0.87";
+const char vers[] PROGMEM = "V0.88";
 const char prgx[] PROGMEM = "#";  // # decodes to prosign SK with no intercharacter gap
 const char imok[] PROGMEM = "73";
 
@@ -367,7 +370,7 @@ void commandmode(void)
       switch (c)  // These are the lockable configuration commands
       {
         case 'R':  // Reset
-          yackreset();
+          yackreset(FLAGS);
           c = TRUE;
           break;
 
@@ -532,8 +535,11 @@ void commandmode(void)
 
 void setup()
 {
-  yackinit();       // Initialize YACK hardware
-  yackinhibit(ON);  // Side tone greeting to confirm the unit is alive and kicking
+  // Initialize YACK hardware
+  yackinit(FLAGS);
+
+  // Side tone greeting to confirm the unit is alive and kicking
+  yackinhibit(ON);
   yackstring(imok);
   yackinhibit(OFF);
 }
