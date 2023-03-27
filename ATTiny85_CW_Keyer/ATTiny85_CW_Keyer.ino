@@ -1,11 +1,15 @@
 /*!
  
- @file      main.c
+ @file      ATTiny85_CW_Keyer.ino (main.c)
  @brief     CW Keyer application
- @author    Jan Lategahn DK3LJ jan@lategahn.com (C) 2010 modified by Jack Welch AI4SV; modified by Don Froula WD9DMP
+ @author    Jan Lategahn DK3LJ jan@lategahn.com (C) 2010
+            Modified by:
+            * Jack Welch AI4SV
+            * Don Froula WD9DMP
+            * Tobias Selig DL3MHT
 
  This file implements a sample CW keyer application by using the yack.c
- library. It is targeted at the ATTINY45 microcontroller but can be used
+ library. It is targeted at the ATTINY85 microcontroller but can be used
  for other ATMEL controllers in the same way. Note the enclosed documentation
  for further defails.
  
@@ -22,7 +26,7 @@
  You should have received a copy of the GNU General Public License
  along with this program.  If not, see <http://www.gnu.org/licenses/>.
  
- @version   0.87
+ @version   0.88
  
  @date      15.10.2010  - Created
  @date      16.12.2010  - Submitted to SVN
@@ -31,21 +35,23 @@
                           Fixed pitch change not saving after timeout. (WD9DMP)
  @date      21.12.2016  - Added a call to save changes to EEPROM while in command mode loop if DIRTYFLAG set for better EEPROM parm save reliability. (WD9DMP)
                           Changed "SK" response when leaving command mode to "#" which now decodes to proper SK without intercharacter space.
-						              Beacon command ("N") was in both the lockable and unlockable command list, making it unlockable. I removed it from the unlockable list, making it lockable.
-						  
+                          Beacon command ("N") was in both the lockable and unlockable command list, making it unlockable. I removed it from the unlockable list, making it lockable.
  @date      03.01.2017  - Added short 3 DAH delay after command returns before txok ("R") is sent to prevent some command outputs running on with txok.
                           If memory recording is interrupted by command button, keyer now returns txok ("R") and stays in command mode. Memory is unchanged.
-						              Removed playback of recorded message before saving.
-					            	  When in Pitch change routine, allow breaking back to command mode with key press. Changes are saved.
-				            		  When in Farnsworth spacing change routine, allow breaking back to command mode with key press. Changes are saved.
-            						  Changed Farnsworth setting mode to play continuous DIT-DAH when not holding paddle to adjust, like Pitch command
-					            	  Changed Version command to return to command mode instead of normal mode if interrupted with command key
-						              Changed speed inquiry command to return to command mode instead of normal mode if interrupted with command key
+                          Removed playback of recorded message before saving.
+                          When in Pitch change routine, allow breaking back to command mode with key press. Changes are saved.
+                          When in Farnsworth spacing change routine, allow breaking back to command mode with key press. Changes are saved.
+                          Changed Farnsworth setting mode to play continuous DIT-DAH when not holding paddle to adjust, like Pitch command
+                          Changed Version command to return to command mode instead of normal mode if interrupted with command key
+                          Changed speed inquiry command to return to command mode instead of normal mode if interrupted with command key
+ @date      12.03.2023  - V0.88 by DL3MHT
+                          Reformatted code to personal preferences
+                          Changed the main.cpp into an Adruino sketch, so that it can be uploaded to a Digispark ATTiny85 board with Micronucleus bootloader
  */
 
 #include "yack.h"
 
-// Configuration
+// Change your configuration here. See yack.h for possible flag values.
 #define FLAGS  IAMBICA | TXKEY | SIDETONE
 
 // Time after which callsign training is assumed complete

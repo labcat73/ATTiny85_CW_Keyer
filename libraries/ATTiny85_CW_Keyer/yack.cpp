@@ -80,8 +80,6 @@ byte fwstor EEMEM = 0;                               // No farnsworth pause
 word user1 EEMEM = 0;                                // User storage
 word user2 EEMEM = 0;                                // User storage
 
-//char eebuffer1[100] EEMEM = "message 1";
-//char eebuffer2[100] EEMEM = "message 2";
 char eebuffer1[100] EEMEM = "message 1";
 char eebuffer2[100] EEMEM = "message 2";
 char eebuffer3[100] EEMEM = "message 3";
