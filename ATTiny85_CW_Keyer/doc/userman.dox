@@ -2,7 +2,6 @@
 
 @mainpage YACK - Yet Another CW Keyer - User Manual
 
-
 @section license License
 
     This program is free software: you can redistribute it and/or modify
@@ -17,7 +16,6 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
 
 @section intro Introduction
 
@@ -34,11 +32,11 @@ To demonstrate the library, a standard keyer application has been written which 
 
 This document describes the operation of the keyer from a user perspective
 
-Version: 0.87
+Version: 0.88
 
 @section hw Hardware
 
-As is, the library is configured to run on a ATTINY85 cpu, as shipped, with its internal oscillator at 8MHz, 
+As is, the library is configured to run on a ATTINY85 CPU, as shipped, with its internal oscillator at 8MHz,
 and prescaled to 1MHz.
 
 The ATTINY85 comes with 8KB of Flash memory and 512 Byte each for RAM and EEPROM. It can be ported to other AVR chips
@@ -47,19 +45,19 @@ internal stack will not work with this application unless significantly rewritte
 
 Hardware connections are defined in yack.h 
 
-- Pin 1 : PB5 - RESET (Can be used for additional button)
-- Pin 2 : PB3 - DIT (towards GND, buffer with 10nF cap)
-- Pin 3 : PB4 - DAH (towards GND, buffer with 10nF cap)
-- Pin 4 : GND
-- Pin 5 : PB0 - TX key line (polarity configurable)
-- Pin 6 : PB1 - Sidetone (Connect a piezo disc)
-- Pin 7 : PB2 - Command button (towards GND)
-- Pin 8 : VCC (5V)
+- PB0 - Sidetone
+- PB1 - TX key line
+- PB2 - Command button
+- PB3 - DIT key
+- PB4 - DAH key
+- PB5 - RESET (Not usable with Digispark as-is)
+
+See supplied schematic for more details.
 
 @section usage Usage
 
-After reset in default mode, the keyer operates as regular IAMBIC keyer in IAMBIC B at 15 WPM
-(words per minute = 60 CPM), with 800 Hz side tone. By default, the transmitter keying signal is
+After reset in default mode, the keyer operates as regular IAMBIC keyer in IAMBIC A at 15 WPM
+(15 words per minute = 30 CPM), with 700 Hz side tone. By default, the transmitter keying signal is
 positive.
 
 @subsection speed Speed Change
@@ -174,6 +172,5 @@ The keyer plays a generated callsign (sidetone only) and the user must repeat it
 played and the next callsign is given. If a mistake was sensed, the error prosign (8 dits) is sounded and
 the current callsign is repeated again for the user to try once more. If nothing is keyed for 10 seconds, the keyer returns
 to command mode.
-
 
 */
