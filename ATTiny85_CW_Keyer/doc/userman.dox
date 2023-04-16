@@ -36,29 +36,42 @@ Version: 0.88
 
 @section hw Hardware
 
-As is, the library is configured to run on a ATTINY85 CPU, as shipped, with its internal oscillator at 8MHz,
+As is, the library is configured to run on a Digispark (ATTINY85 CPU), with its internal oscillator at 8MHz,
 and prescaled to 1MHz.
 
 The ATTINY85 comes with 8KB of Flash memory and 512 Byte each for RAM and EEPROM. It can be ported to other AVR chips
 if these have sufficient features to support the intended application. As the library was written in C, processors without
 internal stack will not work with this application unless significantly rewritten.
 
-Hardware connections are defined in yack.h 
+Hardware connections are defined in yack.h
 
 - PB0 - Sidetone
-- PB1 - TX key line
+- PB1 - TX key line (Also red LED on Digispark)
 - PB2 - Command button
 - PB3 - DIT key
 - PB4 - DAH key
 - PB5 - RESET (Not usable with Digispark as-is)
 
-See supplied schematic for more details.
+See the supplied schematic "cw_keyer_schematic.emf" for more details.
+This is based on the original schematic from Don Froula https://github.com/donfroula/ATTiny85_CW_Keyer/blob/main/schematic.jpg
+JP1 and JP2 were added as these are now shared pins and used for either USB connection or connecting the paddle.
+An additional strong 1.5K pullup was added to make PB4 similar to PB3 on the Digispark which has the 1.5K pullup to
+identify as USB low-speed device. Therefore the jumpers must be open / removed when connecting the Digispark to a PC,
+as the paddle DIT and DAH pin are shared with the USB datalines!
+
+The included "digispark_schematic.emf" was taken from the original schamatics on the digistump.com homepage.
+I just rearranged the components slightly for better clarity and fixed the polarity of D3 as this seems to be a bug
+in the original documentation.
+The "diskark_schematic.emf" is therefore licensed under https://creativecommons.org/licenses/by-sa/3.0/
 
 @section usage Usage
 
 After reset in default mode, the keyer operates as regular IAMBIC keyer in IAMBIC A at 15 WPM
 (15 words per minute = 30 CPM), with 700 Hz side tone. By default, the transmitter keying signal is
 positive.
+
+You can change the configuration in the Arduino sketch at the top by modifying '#define FLAGS'
+The default sidetone frequency is still set in yack.h in '#define DEFFREQ'
 
 @subsection speed Speed Change
 
